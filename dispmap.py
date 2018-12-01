@@ -29,8 +29,8 @@ plt.imshow(img_r, 'gray')
 plt.show()
 
 #reconstruct
-img_rc = fn.recon_from_disp(disparity, img_r) 
-loss = fn.calc_loss_img_diff(img_rc, img_l)
+img_rc = fn.recon_from_disp_cv(disparity, img_r) 
+loss = fn.calc_loss_img_diff_cv(img_rc, img_l)
 
 print(loss)
 
