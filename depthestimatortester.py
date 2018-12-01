@@ -14,6 +14,7 @@ optimizer = torch.optim.Adam(net.parameters(), lr=1e-4)
 
 for image_l, image_r in testdataloader:
     print(image_l.shape)
-    dept_l, dept_ = net(image_l.to(device), image_r.to(device))
-    
+    dept_l, dept_r = net(image_l.to(device), image_r.to(device))
+    print(dept_l.shape)
+    print(dept_r.shape)
     break
