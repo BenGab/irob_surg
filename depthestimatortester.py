@@ -26,10 +26,11 @@ for epoch in range(3):
         dept_l, dept_r = net(image_l, image_r)
         loss = lrf.loss_fn(dept_l, dept_r, image_l, image_r, device)
         loss.backward()
-        print(loss)
         optimizer.step()
         i += 1
         running_loss += loss.item()
+        torch.cuda.empty_cache() 
+        print(i)
         if i % 2000 == 1999:    # print every 2000 mini-batches
             print('[%d, %5d] loss: %.3f' %
                   (epoch + 1, i + 1, running_loss / 2000))
