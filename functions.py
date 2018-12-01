@@ -33,40 +33,51 @@ def calc_loss_img_disp_cv(disp_est_l, disp_est_r, weight = 1.0):
     return  weight * (avg_val * diff)
 
 def recon_from_disp_pil(disparity, img_opp):
-    h, w = disparity.shape
-    im_rec = np.zeros_like(img_opp)
+    _, h, w, _ = disparity.shape
+    recon = torch.zeros_like(img_opp)
     for y in range(h):    
         for x in range(w):
-           intense = disparity[y,x]
+           intense = disparity[0, y, x]
+           intense = (intense.detach().cpu().numpy()[0])
            x_range = x + intense
            if x_range >= 0 and x_range < w:
-               im_rec[y, x] = img_opp[y, x_range]
-    return im_rec
+               #print(img_opp[0, y, x_range])
+               recon[0, y, x] = img_opp[0, y, x_range]
+    return recon
 
 def calc_loss_img_diff_pil(img_recon, img_expected, weight = 0.5):
-    h, w, _ = img_recon.shape
-    avg_val = 1/(h * w)
-    diff = 0
-    for y in range(h):    
-        for x in range(w):
-            exp_sum = np.sum(img_expected[y, x])
-            recon_sum = np.sum(img_recon[y, x])
-            diff = diff + (np.abs(exp_sum - recon_sum))            
-    return weight * (avg_val * diff)
+    _, h, w, _ = img_recon.shape
+    recon_sum = img_recon[0].sum().abs()
+    expected_sum = img_expected[0].sum().abs()   
+    rec_diff = (recon_sum - expected_sum) * (1/(h*w)) * weight        
+    return rec_diff.abs()
 
 def calc_loss_img_disp_pil(disp_est_l, disp_est_r, weight = 1.0):
-    h, w  = disp_est_l.shape
-    avg_val = 1/(h * w)
-    diff = 0
-    for i in range(h):
-        for j in range(w):
-            diff = diff + (np.abs(disp_est_l[i,j] - disp_est_r[i, j]))
-    return weight * (avg_val * diff)
+    _, h, w, _ = disp_est_l.shape
+    dep_sum_l = disp_est_l[0].sum().abs()
+    dep_sum_r = disp_est_r[0].sum().abs()
+    dep_diff = (dep_sum_l - dep_sum_r) * (1/(h*w)) * weight
+    return dep_diff.abs()
 
-def loss_fn_pil(dep_l, dep_r, im_l, im_r):
-    l_recon = recon_from_disp_pil(np.array(dep_l), np.array(im_r))
-    r_recon = recon_from_disp_pil(np.array(dep_r), np.array(im_l))
-    lc_dep = calc_loss_img_disp_pil(np.array(dep_l), np.array(dep_r))
-    lf_l = calc_loss_img_diff_pil(l_recon, np.array(im_l))
-    lf_r = calc_loss_img_diff_pil(r_recon, np.array(im_r))
-    return lc_dep + lf_l + lf_r
+def loss_fn(dep_l, dep_r, im_l, im_r, device):
+    dep_l = dep_l.permute(0, 2, 3, 1)
+    dep_r = dep_r.permute(0, 2, 3, 1)
+    im_l = im_l.permute(0, 2, 3, 1)
+    im_r =im_r.permute(0, 2, 3, 1)
+    result_t = torch.empty(3)
+    #print(dep_l.shape)
+    #print(dep_r.shape)
+    #print(im_l.shape)
+    #print(im_r.shape)
+    dep_diff = calc_loss_img_disp_pil(dep_l, dep_r)
+    result_t[0] = dep_diff
+    recon_tensor_l = recon_from_disp_pil(dep_l, im_r)
+    recon_tensor_r = recon_from_disp_pil(dep_r, im_l)
+    rec_diff_l = calc_loss_img_diff_pil(recon_tensor_l, im_l)
+    result_t[1] = rec_diff_l
+    rec_diff_r = calc_loss_img_diff_pil(recon_tensor_r, im_r)
+    result_t[2] = rec_diff_r
+    return result_t.sum()
+    
+    
+    
