@@ -16,13 +16,22 @@ testdataloader = torch.utils.data.DataLoader(train_data, batch_size=1, shuffle=T
 net = DE.DepthEstimatorNet().to(device)
 optimizer = torch.optim.Adam(net.parameters(), lr=1e-4)
 
-for image_l, image_r in testdataloader:
-    image_l = image_l.to(device)
-    image_r = image_r.to(device)
-    optimizer.zero_grad()
-    dept_l, dept_r = net(image_l, image_r)
-    loss = lrf.loss_fn(dept_l, dept_r, image_l, image_r, device)
-    loss.backward()
-    print(loss)
-    optimizer.step()
-    break
+for epoch in range(3):
+    i = 0
+    running_loss = 0.0
+    for image_l, image_r in testdataloader:
+        image_l = image_l.to(device)
+        image_r = image_r.to(device)
+        optimizer.zero_grad()
+        dept_l, dept_r = net(image_l, image_r)
+        loss = lrf.loss_fn(dept_l, dept_r, image_l, image_r, device)
+        loss.backward()
+        print(loss)
+        optimizer.step()
+        i += 1
+        running_loss += loss.item()
+        if i % 2000 == 1999:    # print every 2000 mini-batches
+            print('[%d, %5d] loss: %.3f' %
+                  (epoch + 1, i + 1, running_loss / 2000))
+            running_loss = 0.0
+

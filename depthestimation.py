@@ -157,5 +157,5 @@ class DepthEstimatorNet(nn.Module):
     def forward(self, img_l, img_r):
         disp_est_l = self.forward_part(img_l)
         disp_est_r = self.forward_part(img_r)
-        return disp_est_l.type(torch.IntTensor), disp_est_r.type(torch.IntTensor)
+        return disp_est_l, disp_est_r
     

@@ -39,7 +39,7 @@ def recon_from_disp_pil(disparity, img_opp):
         for x in range(w):
            intense = disparity[0, y, x]
            intense = (intense.detach().cpu().numpy()[0])
-           x_range = x + intense
+           x_range = x + np.int32(intense)
            if x_range >= 0 and x_range < w:
                #print(img_opp[0, y, x_range])
                recon[0, y, x] = img_opp[0, y, x_range]
@@ -64,20 +64,16 @@ def loss_fn(dep_l, dep_r, im_l, im_r, device):
     dep_r = dep_r.permute(0, 2, 3, 1)
     im_l = im_l.permute(0, 2, 3, 1)
     im_r =im_r.permute(0, 2, 3, 1)
-    result_t = torch.empty(3)
     #print(dep_l.shape)
     #print(dep_r.shape)
     #print(im_l.shape)
     #print(im_r.shape)
     dep_diff = calc_loss_img_disp_pil(dep_l, dep_r)
-    result_t[0] = dep_diff
     recon_tensor_l = recon_from_disp_pil(dep_l, im_r)
     recon_tensor_r = recon_from_disp_pil(dep_r, im_l)
     rec_diff_l = calc_loss_img_diff_pil(recon_tensor_l, im_l)
-    result_t[1] = rec_diff_l
     rec_diff_r = calc_loss_img_diff_pil(recon_tensor_r, im_r)
-    result_t[2] = rec_diff_r
-    return result_t.sum()
+    return dep_diff + rec_diff_l + rec_diff_r
     
     
     
