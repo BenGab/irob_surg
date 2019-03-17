@@ -23,7 +23,7 @@ def unpool_2d(pool, ind, ksize=[1, 2, 2, 1], scope='unpool'):
 def create_autoencoder(batch_size, height, width, channel):
     input = tf.placeholder(tf.float32, shape=[batch_size, height, width, channel] ,name='input')
 
-    conv1_1 = tf.layers.conv2d(input, filters=32, kernel_size=[3, 3], strides=1, activation=tf.nn.relu, name='conv1_1')
+    conv1_1 = tf.layers.conv2d(input, filters=64, kernel_size=[3, 3], strides=1, activation=tf.nn.relu, name='conv1_1')
     conv1_2 = tf.layers.conv2d(conv1_1, filters=64, kernel_size=[3, 3], strides=1, activation=tf.nn.relu, name='conv1_2')
     # pool1, max_unpool_1 = pool2d(conv1_2, 'pool1')
 

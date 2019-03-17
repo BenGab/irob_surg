@@ -21,6 +21,7 @@ def main():
     b, h, w, d = (1, 96, 192, 3)
     im_l, im_r, im_l_g, im_r_g = tfds.read_image(ds[0], (w, h))
     autoencoder = net.create_autoencoder(b, h, w, d)
+    model = net.create_networkd_tf_keras()
     # with tf.Session() as sess:
     #     sess.run(tf.global_variables_initializer())
     #     res = sess.run(autoencoder, feed_dict={input: im_l})
