@@ -2,14 +2,12 @@
 
 import os
 import glob
-import torch
-import numpy as np
 import torchvision.transforms.functional as tfn
 from torch.utils.data.dataset import Dataset
-from PIL import Image
+import cv2
 
 class DavinciDataset(Dataset):
-    def __init__(self, rootDir, train ,leftmap, rightmap, transform = None, reshapeSize = (192, 96)):
+    def __init__(self, rootDir, train ,leftmap, rightmap, transform = None, reshapeSize = (96, 192)):
         self.transforms = transform
         self.rootDir = rootDir
         self.leftmap = leftmap
@@ -34,14 +32,16 @@ class DavinciDataset(Dataset):
         return len(self.roots)
     
     def __getitem__(self, idx):
-        image_l = Image.open(self.roots[idx][0]).resize(self.reshapeSize, Image.ANTIALIAS)
-        image_r = Image.open(self.roots[idx][1]).resize(self.reshapeSize, Image.ANTIALIAS)        
+        image_l = cv2.imread(self.roots[idx][0])
+        image_r = cv2.imread(self.roots[idx][1])
+        image_l = cv2.resize(image_l, self.reshapeSize)
+        image_r = cv2.resize(image_r, self.reshapeSize)
         if self.transforms:
             image_l = self.transforms(image_l)
             image_r = self.transforms(image_r)
         else:
-           image_l = tfn.to_tensor(image_l)
-           image_r = tfn.to_tensor(image_r)
+            image_l = tfn.to_tensor(image_l)
+            image_r = tfn.to_tensor(image_r)
             
         return (image_l, image_r)
 

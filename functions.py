@@ -45,35 +45,51 @@ def recon_from_disp_pil(disparity, img_opp):
                recon[0, y, x] = img_opp[0, y, x_range]
     return recon
 
-def calc_loss_img_diff_pil(img_recon, img_expected, weight = 0.5):
-    _, h, w, _ = img_recon.shape
-    recon_sum = img_recon[0].sum().abs()
-    expected_sum = img_expected[0].sum().abs()   
-    rec_diff = (recon_sum - expected_sum) * (1/(h*w)) * weight        
-    return rec_diff.abs()
+def calc_loss_img_diff(disp_im, img_from_rec, img_expected, weight = 0.5):
+    b, h, w, d = disp_im.size()
+    im_rec = torch.zeros_like(img_expected, requires_grad=True)
+    loss_batch = 0
+    for batch in range(b):
+        for y in range(h):
+            for x in range(w):
+                disp_im_idx = disp_im[batch][y][x].detach().numpy() + x
+                im_rec[batch][y][x][0] = 0
+                im_rec[batch][y][x][1] = 0
+                im_rec[batch][y][x][2] = 0
+                if(int(disp_im_idx) < w):
+                    im_rec[batch][y][x][0] = img_from_rec[batch][y][int(disp_im_idx)][0]
+                    im_rec[batch][y][x][1] = img_from_rec[batch][y][int(disp_im_idx)][1]
+                    im_rec[batch][y][x][2] = img_from_rec[batch][y][int(disp_im_idx)][2]
+        loss = 1/(h*w) * (torch.sum(img_expected - im_rec).abs())
+        loss_batch = loss_batch + loss
+    return loss_batch * weight
 
-def calc_loss_img_disp_pil(disp_est_l, disp_est_r, weight = 1.0):
-    _, h, w, _ = disp_est_l.shape
-    dep_sum_l = disp_est_l[0].sum().abs()
-    dep_sum_r = disp_est_r[0].sum().abs()
-    dep_diff = (dep_sum_l - dep_sum_r) * (1/(h*w)) * weight
-    return dep_diff.abs()
+
+
+def calc_loss_img_disp(disp_est_l, disp_est_r, weight = 1.0):
+    b, h, w, d = disp_est_l.size()
+    dep_r = torch.zeros((b, h, w, d))
+    loss_batch = 0
+    for batch in range(b):
+        for y in range(h):
+            for x in range(w):
+                disp_r_idx = dep_r[batch][y][x].detach().numpy() + x
+                dep_r[batch][y][x] = 0
+                if(int(disp_r_idx) < w):
+                    dep_r[batch][y][x] = disp_est_r[batch][y][int(disp_r_idx)]
+        loss = 1/(h*w) * (torch.sum(disp_est_l - dep_r).abs())
+        loss_batch = loss_batch + loss
+    return loss_batch * weight
 
 def loss_fn(dep_l, dep_r, im_l, im_r, device):
-    dep_l = dep_l.permute(0, 2, 3, 1)
-    dep_r = dep_r.permute(0, 2, 3, 1)
-    im_l = im_l.permute(0, 2, 3, 1)
-    im_r =im_r.permute(0, 2, 3, 1)
-    #print(dep_l.shape)
-    #print(dep_r.shape)
-    #print(im_l.shape)
-    #print(im_r.shape)
-    dep_diff = calc_loss_img_disp_pil(dep_l, dep_r)
-    recon_tensor_l = recon_from_disp_pil(dep_l, im_r)
-    recon_tensor_r = recon_from_disp_pil(dep_r, im_l)
-    rec_diff_l = calc_loss_img_diff_pil(recon_tensor_l, im_l)
-    rec_diff_r = calc_loss_img_diff_pil(recon_tensor_r, im_r)
-    return dep_diff + rec_diff_l + rec_diff_r
+    dep_l = dep_l.permute(0, 3, 2, 1).abs() * 255
+    dep_r = dep_r.permute(0, 3, 2, 1).abs() * 255
+    im_l = im_l.permute(0, 3, 2, 1)
+    im_r = im_r.permute(0, 3, 2, 1)
+    dep_diff = calc_loss_img_disp(dep_l, dep_r)
+    rec_diff_l = calc_loss_img_diff(dep_l, im_r, im_l)
+    rec_diff_r = calc_loss_img_diff(dep_r, im_l, im_r)
+    return rec_diff_l + rec_diff_r + dep_diff
     
     
     
