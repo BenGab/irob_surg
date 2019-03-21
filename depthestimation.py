@@ -117,7 +117,26 @@ class DepthEstimatorNet(nn.Module):
                     nn.Conv2d(3, 1, 3, padding=1),
                     nn.ReLU(),
                     nn.BatchNorm2d(1, 1e-3))
-        
+
+    def calc_recon_from_disp(self, depth_est, img_from_rec):
+        dp_im = depth_est.permute(0, 3, 2, 1).abs() * 255
+        img_from_rec = img_from_rec.permute(0, 3, 2, 1)
+        im_rec = torch.zeros_like(img_from_rec, requires_grad=True)
+        b, h, w, d = depth_est.size()
+        for batch in range(b):
+            for y in range(h):
+                for x in range(w):
+                    disp_im_idx = dp_im[batch][y][x].detach().numpy() + x
+                    im_rec[batch][y][x][0] = 0
+                    im_rec[batch][y][x][1] = 0
+                    im_rec[batch][y][x][2] = 0
+                    if (int(disp_im_idx) < w):
+                        im_rec[batch][y][x][0] = img_from_rec[batch][y][int(disp_im_idx)][0]
+                        im_rec[batch][y][x][1] = img_from_rec[batch][y][int(disp_im_idx)][1]
+                        im_rec[batch][y][x][2] = img_from_rec[batch][y][int(disp_im_idx)][2]
+        return dp_im
+
+
     def forward_part(self, img):
         MP = nn.MaxPool2d(2, stride=2, return_indices=True)
         UP = nn.MaxUnpool2d(2, stride=2) 
@@ -168,5 +187,6 @@ class DepthEstimatorNet(nn.Module):
     
     def forward(self, img_l, img_r):
         disp_est_l = self.forward_part(img_l)
-        disp_est_r = self.forward_part(img_r)
-        return disp_est_l, disp_est_r
+        # disp_est_r = self.forward_part(img_r)
+        im_rec = self.calc_recon_from_disp(disp_est_l, img_r)
+        return disp_est_l, im_rec
