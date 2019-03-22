@@ -2,6 +2,7 @@
 
 import os
 import glob
+import torch
 import torchvision.transforms.functional as tfn
 from torch.utils.data.dataset import Dataset
 import cv2
@@ -36,12 +37,15 @@ class DavinciDataset(Dataset):
         image_r = cv2.imread(self.roots[idx][1])
         image_l = cv2.resize(image_l, self.reshapeSize)
         image_r = cv2.resize(image_r, self.reshapeSize)
+        image_rg = cv2.cvtColor(image_r, cv2.COLOR_BGR2GRAY)
         if self.transforms:
             image_l = self.transforms(image_l)
             image_r = self.transforms(image_r)
+            image_rg = self.transforms(image_r)
         else:
             image_l = tfn.to_tensor(image_l)
             image_r = tfn.to_tensor(image_r)
+            image_rg = tfn.to_tensor(image_rg)
             
-        return (image_l, image_r)
+        return (image_l, image_r, image_rg)
 
