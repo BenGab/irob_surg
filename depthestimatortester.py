@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 import depthestimation as DE
 import davinci_dataset as dvs
+import functions as fn
 
 device = "cpu"
 batch_size=16
@@ -18,11 +19,11 @@ for epoch in range(40):
     for image_l, image_r, image_rg in testdataloader:
         image_l = image_l.to(device)
         image_r = image_r.to(device)
-        dept_l, im_rec = net(image_l, image_r, image_rg)
+        dept_l = net(image_l, image_r)
+        im_rec = fn.apply_disparity(image_r, dept_l)
         optimizer.zero_grad()
         image_l = image_l.permute(0, 1, 3, 2)
         loss = criterion(im_rec, image_l)
-        print(loss)
         loss.backward()
         optimizer.step()
         i += 1
@@ -33,3 +34,4 @@ for epoch in range(40):
                   (epoch + 1, i + 1, running_loss / 2000))
             running_loss = 0.0
 
+torch.save(net.state_dict(), "d:\/Development/daVinci/daVinci/depthnet.pt")
