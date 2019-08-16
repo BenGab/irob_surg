@@ -53,7 +53,12 @@ def get_model(model_path, model_type='UNet11', problem_type='binary'):
     elif model_type == 'UNet':
         model = UNet(num_classes=num_classes)
 
-    state = torch.load(str(model_path))
+    state = None
+    if torch.cuda.is_available():
+        state = torch.load(str(model_path))
+    else:
+        state = torch.load(str(model_path), map_location='cpu')
+
     state = {key.replace('module.', ''): value for key, value in state['model'].items()}
     model.load_state_dict(state)
 
