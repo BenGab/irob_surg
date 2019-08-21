@@ -2,6 +2,13 @@
 import numpy as np
 import torch
 import torch.nn.functional as F
+import torchvision.transforms.functional as tvf
+
+def img_to_tensor(im, normalize=None):
+    tensor = torch.from_numpy(np.moveaxis((im / 255), -1, 0).astype(np.float32))
+    if normalize is not None:
+        return tvf.normalize(tensor, **normalize)
+    return tensor
 
 def recon_from_disp_cv(disparity, img_opp):
     h, w = disparity.shape
