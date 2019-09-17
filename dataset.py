@@ -2,6 +2,7 @@ import torch
 import numpy as np
 import cv2
 from torch.utils.data import Dataset
+from prepare_data import height, width, h_start, w_start
 import prepare_data
 #from albumentations.torch.functional import img_to_tensor
 
@@ -37,6 +38,7 @@ class RoboticsDataset(Dataset):
 
 def load_image(path):
     img = cv2.imread(str(path))
+    img = img[h_start:h_start + height, w_start:w_start + width]
     return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
 

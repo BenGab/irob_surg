@@ -23,7 +23,7 @@ from albumentations import Compose, Normalize
 
 def img_transform(p=1):
     return Compose([
-        Normalize(p=1)
+        Normalize(p)
     ], p=p)
 
 

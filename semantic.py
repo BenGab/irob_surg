@@ -3,21 +3,26 @@ import torch
 from generate_masks import get_model, img_transform
 from functions import img_to_tensor
 import numpy as np
-import cv2
 import matplotlib.pyplot as plt
 
 arrt = np.random.randn(500, 500)
 tensor = img_to_tensor(arrt)
-print(tensor)
+mean=(0.485, 0.456, 0.406)
+std=(0.229, 0.224, 0.225)
 
-model_path = 'pretrained/unet11_binary_20/model_0.pt'
-model = get_model(model_path, model_type='UNet11', problem_type='binary')
+#new_img = img - mean /std
+#old img = 
 
-img =  load_image('pretrained/test2.png')
+model_path = 'pretrained/unet16_instruments_20/model_0.pt'
+model = get_model(model_path, model_type='UNet16', problem_type='instruments')
+
+img =  load_image('dataset/instrument_1_4_testing/instrument_dataset_1/left_frames/frame225.png')
 img_tensor = img_to_tensor(img)
 input_img = torch.unsqueeze(img_to_tensor(img_transform(p=1)(image=img)['image']), dim=0)
 mask = model(input_img)
 
-mask_array = mask.data[0].cpu().numpy()[0]
+im_seg = mask.data[0].cpu().numpy()[0]
+
+mask_array = (im_seg * std) + mean
 
 plt.imshow(mask_array > 0)
