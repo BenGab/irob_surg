@@ -13,16 +13,16 @@ std=(0.229, 0.224, 0.225)
 #new_img = img - mean /std
 #old img = 
 
-model_path = 'pretrained/unet16_instruments_20/model_0.pt'
+model_path = 'pretrained/unet16_instruments_20/model_1.pt'
 model = get_model(model_path, model_type='UNet16', problem_type='instruments')
 
-img =  load_image('dataset/instrument_1_4_testing/instrument_dataset_1/left_frames/frame225.png')
+img =  load_image('dataset/instrument_dataset_1/left_frames/frame000.png')
 img_tensor = img_to_tensor(img)
 input_img = torch.unsqueeze(img_to_tensor(img_transform(p=1)(image=img)['image']), dim=0)
 mask = model(input_img)
 
 im_seg = mask.data[0].cpu().numpy()[0]
 
-mask_array = (im_seg * std) + mean
+#mask_array = (im_seg * std) + mean
 
-plt.imshow(mask_array > 0)
+plt.imshow(im_seg > 0)
