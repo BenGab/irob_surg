@@ -8,11 +8,14 @@ Created on Wed Nov 28 21:34:49 2018
 
 import cv2
 from matplotlib import pyplot as plt
-import functions as fn
-    
+import torch
+from functions import rebuild_from_disparity
 
-img_l = cv2.imread('im_l.png')
-img_r = cv2.imread('im_r.png')
+left_image_path = 'dataset/instrument_dataset_1/left_frames/frame000.png'
+right_mage_path = 'dataset/instrument_dataset_1/right_frames/frame000.png'
+
+img_l = cv2.imread(left_image_path)
+img_r = cv2.imread(right_mage_path)
 img_l = cv2.cvtColor(img_l, cv2.COLOR_BGR2GRAY)
 img_r = cv2.cvtColor(img_r, cv2.COLOR_BGR2GRAY)
 
@@ -28,11 +31,13 @@ plt.show()
 plt.imshow(img_r, 'gray')
 plt.show()
 
-#reconstruct
-img_rc = fn.recon_from_disp_cv(disparity, img_r) 
-loss = fn.calc_loss_img_diff_cv(img_rc, img_l)
+left_tensor = torch.from_numpy(img_l)
+right_tensor = torch.from_numpy(img_r)
+disp_tensor = torch.from_numpy(disparity)
 
-print(loss)
+recon = rebuild_from_disparity(right_tensor, disp_tensor)
 
-plt.imshow(img_rc, 'gray')
-plt.show()          
+print(disp_tensor)
+
+
+          
