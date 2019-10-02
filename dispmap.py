@@ -10,6 +10,7 @@ import cv2
 from matplotlib import pyplot as plt
 import torch
 from functions import rebuild_from_disparity
+import numpy as np
 
 left_image_path = 'dataset/instrument_dataset_1/left_frames/frame000.png'
 right_mage_path = 'dataset/instrument_dataset_1/right_frames/frame000.png'
@@ -30,6 +31,7 @@ plt.show()
 
 plt.imshow(img_r, 'gray')
 plt.show()
+
 
 left_tensor = torch.from_numpy(img_l)
 right_tensor = torch.from_numpy(img_r)
