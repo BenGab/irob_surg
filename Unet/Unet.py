@@ -5,7 +5,7 @@ def double_conv(in_channels, out_channels):
     return nn.Sequential(
         nn.Conv2d(in_channels, out_channels, 3, padding=1),
         nn.LeakyReLU(inplace=True),
-        nn.Conv2d(in_channels, out_channels, 3, padding=1),
+        nn.Conv2d(out_channels, out_channels, 3, padding=1),
         nn.LeakyReLU(inplace=True)
     )
 
@@ -44,7 +44,7 @@ class UNet(nn.Module):
 
         x = self.upconv_layer_3(x)
         
-        x = x.upsample(x)
+        x = self.upsample(x)
         x = torch.cat([x, conv2], dim=1)
 
         x = self.upconv_layer_2(x)
