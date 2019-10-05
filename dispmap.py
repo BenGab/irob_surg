@@ -12,17 +12,18 @@ import torch
 from functions import rebuild_from_disparity
 import numpy as np
 
-left_image_path = 'dataset/instrument_dataset_1/left_frames/frame000.png'
-right_mage_path = 'dataset/instrument_dataset_1/right_frames/frame000.png'
+left_image_path = '/home/bennyg/Development/datasets/instrument_dataset_1/left_frames/frame000.png'
+right_mage_path = '/home/bennyg/Development/datasets/instrument_dataset_1/right_frames/frame000.png'
 
 img_l = cv2.imread(left_image_path)
 img_r = cv2.imread(right_mage_path)
-img_l = cv2.cvtColor(img_l, cv2.COLOR_BGR2GRAY)
-img_r = cv2.cvtColor(img_r, cv2.COLOR_BGR2GRAY)
-
+img_l = cv2.cvtColor(img_l, cv2.COLOR_BGR2RGB)
+img_r = cv2.cvtColor(img_r, cv2.COLOR_BGR2RGB)
+img_l_g = cv2.cvtColor(img_l, cv2.COLOR_BGR2GRAY)
+img_r_g = cv2.cvtColor(img_r, cv2.COLOR_BGR2GRAY)
 stereo = cv2.StereoBM_create()
 
-disparity = stereo.compute(img_l, img_r)
+disparity = stereo.compute(img_l_g, img_r_g)
 plt.imshow(disparity, 'gray')
 plt.show()
 
@@ -32,14 +33,15 @@ plt.show()
 plt.imshow(img_r, 'gray')
 plt.show()
 
-
-left_tensor = torch.from_numpy(img_l)
-right_tensor = torch.from_numpy(img_r)
-disp_tensor = torch.from_numpy(disparity)
-
-recon = rebuild_from_disparity(right_tensor, disp_tensor)
-
-print(disp_tensor)
+left_tensor = torch.from_numpy(np.array([img_l]).astype(np.float32))
+right_tensor = torch.from_numpy(np.array([img_r]).astype(np.float32))
+disp_tensor = torch.from_numpy(np.array([[disparity]]).astype(np.float32))
 
 
-          
+
+recon = rebuild_from_disparity(right_tensor.permute(0, 3, 1, 2), disp_tensor)
+
+recon = recon.permute(0, 2, 3, 1).data[0].cpu().numpy()
+
+plt.imshow(recon, 'gray')
+plt.show()        
