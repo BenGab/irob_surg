@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from Unet import UNet
 from UnetDataset import ToolDataset
+from NetUtils import save_model
 
 input_size = (256, 256)
 mean = 0.485
@@ -33,3 +34,6 @@ for i in range(number_epoch):
         optimizer.step()
           
     print('Epoch: {} / {} Loss: {0:.4f}'.format(i + 1, number_epoch, epoch_loss / loss_index))
+    
+protoPath = '/home/bennyg/Development/pretrained_models/Unet_C4.pt'
+save_model(net, protoPath)
