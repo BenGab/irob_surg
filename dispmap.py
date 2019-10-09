@@ -12,8 +12,8 @@ import torch
 from functions import rebuild_from_disparity
 import numpy as np
 
-left_image_path = '/home/bennyg/Development/datasets/instrument_dataset_1/left_frames/frame000.png'
-right_mage_path = '/home/bennyg/Development/datasets/instrument_dataset_1/right_frames/frame000.png'
+left_image_path = '/home/bennyg/Development/daVinci/daVinci/test/image_0/000002.png'
+right_mage_path = '/home/bennyg/Development/daVinci/daVinci/test/image_1/000002.png'
 
 img_l = cv2.imread(left_image_path)
 img_r = cv2.imread(right_mage_path)
@@ -39,9 +39,9 @@ disp_tensor = torch.from_numpy(np.array([[disparity]]).astype(np.float32))
 
 
 
-recon = rebuild_from_disparity(right_tensor.permute(0, 3, 1, 2), disp_tensor)
+recon = rebuild_from_disparity(left_tensor.permute(0, 3, 1, 2), disp_tensor)
 
 recon = recon.permute(0, 2, 3, 1).data[0].cpu().numpy()
 
-plt.imshow(recon, 'gray')
+plt.imshow(recon)
 plt.show()        

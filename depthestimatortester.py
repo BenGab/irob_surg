@@ -26,6 +26,7 @@ for epoch in range(40):
         #print(dept_l.shape)
         dept_l = torch.floor(dept_l * 255)
         im_rec = fn.rebuild_from_disparity(image_r, dept_l)
+        print(dept_l.shape)
         #print(im_rec.permute(0,1,3,2).shape)
         optimizer.zero_grad()
         #image_l = image_l.permute(0, 1, 3, 2)

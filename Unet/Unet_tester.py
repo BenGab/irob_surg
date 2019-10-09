@@ -8,7 +8,7 @@ input_size = (256, 256)
 mean = 0.485
 std = 0.229
 pixdeviator = 255
-dataset = ToolDataset('/home/bennyg/Development/datasets/instrument_dataset_1', mean, 
+dataset = ToolDataset('/home/bennyg/Development/irob_surg/dataset/instrument_dataset_1', mean, 
                       std, pixdeviator, input_size)
 dataloader = torch.utils.data.DataLoader(dataset, shuffle=False)
 number_epoch = 5
