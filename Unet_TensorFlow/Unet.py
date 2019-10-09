@@ -18,7 +18,7 @@ class Unet(tf.keras.Model):
         self.maxpool = tf.keras.layers.MaxPool2D()
         self.upsample = tf.keras.layers.UpSampling2D(interpolation='bilinear')
         self.concatenate = tf.keras.layers.Concatenate()
-        self.out_conv = tf.keras.layers.Conv2D(num_classes, 1)
+        self.out_conv = tf.keras.layers.Conv2D(num_classes, 1, activation='relu')
 
         self.upconv_layer_3 = double_conv(256)
         self.upconv_layer_2 = double_conv(128)
