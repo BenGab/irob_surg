@@ -24,13 +24,13 @@ dataset = ToolDataset(['/home/bennyg/Development/datasets/miccai_challenge_2018_
                        '/home/bennyg/Development/datasets/miccai_challenge_release_4/seq_15',
                        '/home/bennyg/Development/datasets/miccai_challenge_release_4/seq_16'], mean, 
                       std, pixdeviator, input_size)
-dataloader = torch.utils.data.DataLoader(dataset, shuffle=False)
+dataloader = torch.utils.data.DataLoader(dataset, shuffle=True, batch_size=10)
 
-number_epoch = 5
-learning_rate = 1e-3
+number_epoch = 15
+learning_rate = 1e-1
 net = UNet(1)
-optimizer = torch.optim.SGD(net.parameters(), lr=learning_rate)
-criterion = nn.MSELoss()
+optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
+criterion = nn.L1Loss()
 number_train = len(dataloader)
 for i in range(number_epoch):
     epoch_loss = 0.0
