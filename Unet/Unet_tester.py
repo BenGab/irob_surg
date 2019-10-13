@@ -8,16 +8,27 @@ input_size = (256, 256)
 mean = 0.485
 std = 0.229
 pixdeviator = 255
-dataset = ToolDataset(['/home/bennyg/Development/datasets/instrument_dataset_1', 
-                       '/home/bennyg/Development/datasets/instrument_dataset_2',
-                       '/home/bennyg/Development/datasets/instrument_dataset_3',
-                       '/home/bennyg/Development/datasets/instrument_dataset_4'], mean, 
+dataset = ToolDataset(['/home/bennyg/Development/datasets/miccai_challenge_2018_release_1/seq_1',
+                       '/home/bennyg/Development/datasets/miccai_challenge_2018_release_1/seq_2',
+                       '/home/bennyg/Development/datasets/miccai_challenge_2018_release_1/seq_3',
+                       '/home/bennyg/Development/datasets/miccai_challenge_2018_release_1/seq_4',
+                       '/home/bennyg/Development/datasets/miccai_challenge_release_2/seq_5',
+                       '/home/bennyg/Development/datasets/miccai_challenge_release_2/seq_6',
+                       '/home/bennyg/Development/datasets/miccai_challenge_release_2/seq_7',
+                       '/home/bennyg/Development/datasets/miccai_challenge_release_3/seq_9',
+                       '/home/bennyg/Development/datasets/miccai_challenge_release_3/seq_10',
+                       '/home/bennyg/Development/datasets/miccai_challenge_release_3/seq_11',
+                       '/home/bennyg/Development/datasets/miccai_challenge_release_3/seq_12'
+                       '/home/bennyg/Development/datasets/miccai_challenge_release_4/seq_13', 
+                       '/home/bennyg/Development/datasets/miccai_challenge_release_4/seq_14',
+                       '/home/bennyg/Development/datasets/miccai_challenge_release_4/seq_15',
+                       '/home/bennyg/Development/datasets/miccai_challenge_release_4/seq_16'], mean, 
                       std, pixdeviator, input_size)
 dataloader = torch.utils.data.DataLoader(dataset, shuffle=False)
 
 number_epoch = 5
 learning_rate = 1e-3
-net = UNet(4)
+net = UNet(1)
 optimizer = torch.optim.SGD(net.parameters(), lr=learning_rate)
 criterion = nn.MSELoss()
 number_train = len(dataloader)
