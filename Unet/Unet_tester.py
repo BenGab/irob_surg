@@ -29,7 +29,7 @@ dataloader = torch.utils.data.DataLoader(dataset, shuffle=True, batch_size=10)
 number_epoch = 15
 learning_rate = 1e-1
 net = UNet(1)
-optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
+optimizer = torch.optim.SGD(net.parameters(), lr=learning_rate)
 criterion = nn.L1Loss()
 number_train = len(dataloader)
 for i in range(number_epoch):
