@@ -39,6 +39,8 @@ for i in range(number_epoch):
     for image_src, image_mask in dataloader:
         loss_index += 1
         pred_mask = net(image_src)
+        pred_flat = torch.flatten(pred_mask, start_dim=1)
+        mask_flat = torch.flatten(image_mask, start_dim=1)
         loss = criterion(pred_mask, image_mask)
         epoch_loss += loss.item()
         print('{0}/{1} --- loss: {2:.6f}'.format(loss_index, number_train, loss.item()))
@@ -48,5 +50,5 @@ for i in range(number_epoch):
           
     print('Epoch: {} / {} Loss: {}'.format(i + 1, number_epoch, epoch_loss / loss_index))
     
-protoPath = '/home/bennyg/Development/pretrained_models/Unet_C4.pt'
+protoPath = '/home/bennyg/Development/pretrained_models/Unet_C1.pt'
 save_model(net, protoPath)
