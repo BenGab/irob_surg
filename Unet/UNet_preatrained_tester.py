@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 from Unet import UNet
 from NetUtils import load_model, load_image, image_to_tensor
 
-path = '/home/gabor/Development/datasets/frame000.png'
-pretrained_path = '/home/gabor/Development/pretrained_models/Unet_C1.pt'
+path = '/home/bennyg/Development/datasets/miccai_challenge_release_2/seq_5/left_frames/frame001.png'
+pretrained_path = '/home/bennyg//Letöltések/Unet_C1.pt'
 
 image = load_image(path, (256, 256))
 tensor = image_to_tensor(image)

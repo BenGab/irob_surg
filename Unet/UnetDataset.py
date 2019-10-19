@@ -33,7 +33,7 @@ class ToolDataset(Dataset):
         image_src = cv2.resize(cv2.cvtColor(cv2.imread(self.paths[idx][0]), cv2.COLOR_BGR2RGB), self.input_size)
         image_labels = cv2.resize(cv2.cvtColor(cv2.imread(self.paths[idx][1]), cv2.COLOR_BGR2GRAY), self.input_size)
         
-        image_mask = torch.from_numpy(self.normalize_image(np.array([image_labels])))
+        image_mask = torch.from_numpy((self.normalize_image(np.array([image_labels]))))
         image_src = torch.from_numpy(self.normalize_image(np.transpose(image_src, (2, 0, 1))))
         return image_src, image_mask
         
