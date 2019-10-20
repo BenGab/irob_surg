@@ -33,7 +33,7 @@ class MiccaiDataset:
             self.images.append(self.normalize_image(image_src))
             self.labels.append(self.normalize_image(label_src))
         
-        return self.images, self.labels
+        return np.array(self.images), np.array(self.labels)
             
         
         

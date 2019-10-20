@@ -2,7 +2,9 @@
 import tensorflow as tf
 from Dataset import  MiccaiDataset
 from Unet import Unet
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
+batchSize = 1
 data = MiccaiDataset(['/datasets/miccai_challenge_2018_release_1/seq_1',
                        '/datasets/miccai_challenge_2018_release_1/seq_2',
                        '/datasets/miccai_challenge_2018_release_1/seq_3',
@@ -23,5 +25,13 @@ image_srcs, image_labels = data.load_images()
 
 model = Unet(3)
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+print(image_srcs.shape)
+print('Generating images')
+datagen = ImageDataGenerator()
+train_data = datagen.flow(image_srcs, image_labels, batch_size=batchSize)
+#train_labels = datagen.flow(image_labels, batch_size=batchSize)
+print('image generation done')
+
+model.fit(train_data, epochs=15)
 
 
