@@ -21,17 +21,13 @@ data = MiccaiDataset(['/datasets/miccai_challenge_2018_release_1/seq_1',
                        '/datasets/miccai_challenge_release_4/seq_15',
                        '/datasets/miccai_challenge_release_4/seq_16'], 255, (256, 256))
 
-image_srcs, image_labels = data.load_images()
 
 model = Unet(3)
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-print(image_srcs.shape)
 print('Generating images')
-datagen = ImageDataGenerator()
-train_data = datagen.flow(image_srcs, image_labels, batch_size=batchSize)
-#train_labels = datagen.flow(image_labels, batch_size=batchSize)
+datagen = data.image_generator()
 print('image generation done')
 
-model.fit(train_data, epochs=15)
+model.fit_generator(datagen, epochs=15, steps_per_epoch=data.data_len())
 
 

@@ -34,6 +34,18 @@ class MiccaiDataset:
             self.labels.append(self.normalize_image(label_src))
         
         return np.array(self.images), np.array(self.labels)
+
+    def data_len(self):
+        return len(self.paths)
+    
+    def image_generator(self):
+        for image, mask in self.paths:           
+            image_src = cv2.resize(cv2.cvtColor(cv2.imread(image), cv2.COLOR_BGR2RGB), self.input_size)
+            label_src = cv2.resize(cv2.cvtColor(cv2.imread(mask), cv2.COLOR_BGR2RGB), self.input_size)
+            yield (np.array([self.normalize_image(image_src)]), np.array([self.normalize_image(label_src)]))
+
+
+
             
         
         
