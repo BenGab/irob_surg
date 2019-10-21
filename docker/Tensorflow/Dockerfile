@@ -1,4 +1,4 @@
-FROM nvidia/cuda:10.1-base-ubuntu18.04
+FROM nvidia/cuda:10.0-base-ubuntu18.04
 LABEL Name=docker Version=1.0.0
 RUN apt -y update \
     && apt install -y python3 python3-pip libsm6 libxext6 libxrender-dev
