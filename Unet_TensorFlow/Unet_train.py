@@ -3,7 +3,11 @@ import tensorflow as tf
 from Dataset import  MiccaiDataset
 from Unet import Unet
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.backend import set_session
+from time import time
+from tensorflow.keras.callbacks import TensorBoard
 
+tensorboard = TensorBoard('/boards/{}'.format(time()))
 batchSize = 1
 data = MiccaiDataset(['/datasets/miccai_challenge_2018_release_1/seq_1',
                        '/datasets/miccai_challenge_2018_release_1/seq_2',
@@ -21,13 +25,17 @@ data = MiccaiDataset(['/datasets/miccai_challenge_2018_release_1/seq_1',
                        '/datasets/miccai_challenge_release_4/seq_15',
                        '/datasets/miccai_challenge_release_4/seq_16'], 255, (256, 256))
 
-
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+sess = tf.Session(config=config)
+set_session(sess)
 model = Unet(3)
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 print('Generating images')
 datagen = data.image_generator()
 print('image generation done')
+model.fit_generator(datagen, epochs=15, steps_per_epoch=data.data_len(), callbacks=[tensorboard])
+model.save_weights('/pretrined_models/UNET_CAT_END_C1.h5')
 
-model.fit_generator(datagen, epochs=15, steps_per_epoch=data.data_len())
 
 

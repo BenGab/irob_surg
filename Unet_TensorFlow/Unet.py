@@ -25,6 +25,7 @@ class Unet(tf.keras.Model):
         self.upconv_layer_1 = double_conv(64)
     
     def call(self, x):
+        print(x)
         conv1 = self.conv_layer_1(x)
         x = self.maxpool(conv1)
 
