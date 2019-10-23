@@ -6,6 +6,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.backend import set_session
 from time import time
 from tensorflow.keras.callbacks import TensorBoard
+from tensorflow.keras.optimizers import Adam
 
 tensorboard = TensorBoard('/boards/{}'.format(time()))
 batchSize = 1
@@ -30,12 +31,12 @@ config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
 set_session(sess)
 model = Unet(3)
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy', optimizer=Adam(0.000001), metrics=['accuracy'])
 print('Generating images')
 datagen = data.image_generator()
 print('image generation done')
-model.fit_generator(datagen, epochs=16, steps_per_epoch=data.data_len(), callbacks=[tensorboard])
-model.save_weights('/pretrined_models/UNET_CAT_END_C2.h5')
+model.fit_generator(datagen, epochs=36, steps_per_epoch=data.data_len(), callbacks=[tensorboard])
+model.save_weights('/pretrined_models/UNET_CAT_END_C5.h5')
 
 
 
