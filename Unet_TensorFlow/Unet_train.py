@@ -23,7 +23,7 @@ data = MiccaiDataset(['/datasets/miccai_challenge_2018_release_1/seq_1',
                        '/datasets/miccai_challenge_release_4/seq_13', 
                        '/datasets/miccai_challenge_release_4/seq_14',
                        '/datasets/miccai_challenge_release_4/seq_15',
-                       '/datasets/miccai_challenge_release_4/seq_16'], 255, (256, 256))
+                       '/datasets/miccai_challenge_release_4/seq_16'], 255, (256, 256), batch_size=batchSize)
 
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
@@ -34,8 +34,8 @@ model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accur
 print('Generating images')
 datagen = data.image_generator()
 print('image generation done')
-model.fit_generator(datagen, epochs=15, steps_per_epoch=data.data_len(), callbacks=[tensorboard])
-model.save_weights('/pretrined_models/UNET_CAT_END_C1.h5')
+model.fit_generator(datagen, epochs=16, steps_per_epoch=data.data_len(), callbacks=[tensorboard])
+model.save_weights('/pretrined_models/UNET_CAT_END_C2.h5')
 
 
 

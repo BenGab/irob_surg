@@ -5,9 +5,10 @@ import os
 import glob
     
 class MiccaiDataset:
-    def __init__(self, rootDirs, pixelDiv, input_size):
+    def __init__(self, rootDirs, pixelDiv, input_size, batch_size=1):
         self.pixelDiv = pixelDiv
         self.input_size = input_size 
+        self.batch_size = batch_size
         self.paths = []
         self.images = []
         self.labels = []
@@ -36,15 +37,22 @@ class MiccaiDataset:
         return np.array(self.images), np.array(self.labels)
 
     def data_len(self):
-        return len(self.paths)
+        return len(self.paths) / self.batch_size
     
     def image_generator(self):
         while True:
-            for image, mask in self.paths:           
+            start=0
+            end=self.batch_size 
+            images, labels = [], []
+            for i in range(start, end):
+                image, mask = self.paths[i]
                 image_src = cv2.resize(cv2.cvtColor(cv2.imread(image), cv2.COLOR_BGR2RGB), self.input_size)
                 label_src = cv2.resize(cv2.cvtColor(cv2.imread(mask), cv2.COLOR_BGR2RGB), self.input_size)
-                yield (np.array([self.normalize_image(image_src)]), np.array([self.normalize_image(label_src)]))
-
+                images.append(self.normalize_image(image_src))
+                labels.append(self.normalize_image(label_src))
+            start+=self.batch_size
+            end+=self.batch_size              
+            yield np.array(images), np.array(labels)
 
 
             
