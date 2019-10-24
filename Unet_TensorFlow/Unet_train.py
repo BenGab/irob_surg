@@ -8,8 +8,8 @@ from time import time
 from tensorflow.keras.callbacks import TensorBoard, EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 from tensorflow.keras.optimizers import Adam
 
-best_save_path='/pretrined_models/UNET11_CAT_END_C3_best.h5'
-save_path = '/pretrined_models/UNET11_CAT_END_C3.h5'
+best_save_path='/pretrined_models/UNET11_MAE_C1_best.h5'
+save_path = '/pretrined_models/UNET11_MAE_C1_.h5'
 callbacks_l = [
     TensorBoard('/boards/{}'.format(time())),
     EarlyStopping('loss', patience=10, verbose=1),
@@ -40,9 +40,8 @@ set_session(sess)
 
 net = Unet11()
 model = net.build_unet(tf.keras.layers.Input((256, 256, 3)))
-model.compile(loss='categorical_crossentropy', optimizer=Adam(0.01), metrics=['accuracy'])
+model.compile(loss='mean_absolute_error', optimizer=Adam(0.01), metrics=['accuracy'])
 datagen = data.image_generator()
-
 
 model.fit_generator(datagen, epochs=100, steps_per_epoch=data.data_len(), callbacks=callbacks_l)
 model.save_weights(save_path)

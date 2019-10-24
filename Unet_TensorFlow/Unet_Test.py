@@ -18,7 +18,7 @@ set_session(sess)
 net = Unet11()
 input_img = tf.keras.layers.Input((256, 256, 3), name='img')
 model = net.build_unet(input_img)
-model.load_weights('/pretrined_models/UNET11_CAT_END_C3_best.h5')
+model.load_weights('/pretrined_models/UNET11_MAE_C1_best.h5')
 
 image = load_image('/datasets/miccai_challenge_2018_release_1/seq_1/left_frames/frame000.png')
 pred = model.predict(image)
@@ -27,5 +27,5 @@ pred = pred * 255
 pred = pred.astype(np.int32)
 pred[pred < 0]=0
 pred[pred > 255]=0
-cv2.imwrite('/datasets/UNET11_CAT_END_C3_best.png', pred)
+cv2.imwrite('/datasets/UNET11_MAE_C1_best.png', pred)
 
