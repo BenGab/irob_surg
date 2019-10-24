@@ -16,4 +16,4 @@ data = MiccaiDataset(['/datasets/miccai_challenge_2018_release_1/seq_1',
                        '/datasets/miccai_challenge_release_4/seq_15',
                        '/datasets/miccai_challenge_release_4/seq_16'], 255, (256, 256))
 
-data.copy_images('/datasets/miccai/images', '/datasets/miccai/labels')
+data.copy_images('/datasets/miccai/images/data/train/class_a/', '/datasets/miccai/labels/data/train/class_a/')

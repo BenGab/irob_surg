@@ -36,6 +36,12 @@ class MiccaiDataset:
             self.labels.append(self.normalize_image(label_src))
         
         return np.array(self.images), np.array(self.labels)
+    
+    def data_sample(self):
+        img, label = self.paths[0]
+        im_s = cv2.resize(cv2.cvtColor(cv2.imread(img), cv2.COLOR_BGR2RGB), self.input_size)
+        mask_s = cv2.resize(cv2.cvtColor(cv2.imread(label), cv2.COLOR_BGR2RGB), self.input_size)
+        return im_s, mask_s
 
     def data_len(self):
         return len(self.paths) / self.batch_size

@@ -17,33 +17,30 @@ callbacks_l = [
     ModelCheckpoint(best_save_path, 'loss' ,verbose=1, save_best_only=True, save_weights_only=True)
 ]
 batchSize = 1
-data = MiccaiDataset(['/datasets/miccai_challenge_2018_release_1/seq_1',
-                       '/datasets/miccai_challenge_2018_release_1/seq_2',
-                       '/datasets/miccai_challenge_2018_release_1/seq_3',
-                       '/datasets/miccai_challenge_2018_release_1/seq_4',
-                       '/datasets/miccai_challenge_release_2/seq_5',
-                       '/datasets/miccai_challenge_release_2/seq_6',
-                       '/datasets/miccai_challenge_release_2/seq_7',
-                       '/datasets/miccai_challenge_release_3/seq_9',
-                       '/datasets/miccai_challenge_release_3/seq_10',
-                       '/datasets/miccai_challenge_release_3/seq_11',
-                       '/datasets/miccai_challenge_release_3/seq_12'
-                       '/datasets/miccai_challenge_release_4/seq_13', 
-                       '/datasets/miccai_challenge_release_4/seq_14',
-                       '/datasets/miccai_challenge_release_4/seq_15',
-                       '/datasets/miccai_challenge_release_4/seq_16'], 255, (256, 256), batch_size=batchSize)
+data = MiccaiDataset(['/datasets/miccai_challenge_2018_release_1/seq_1'], 255, (256, 256), batch_size=batchSize)
 
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
 set_session(sess)
 
+train_images = ImageDataGenerator(rescale=1./255, rotation_range=20, width_shift_range=2, height_shift_range=2)
+mask_images = ImageDataGenerator(rescale=1./255, rotation_range=20, width_shift_range=2, height_shift_range=2)
+seed = 1
+s_im, s_mask = data.data_sample()
+print(s_mask.shape)
+train_images.fit([s_im], augment=True, seed=seed)
+mask_images.fit([s_mask], augment=True, seed=seed)
+
+image_generator = train_images.flow_from_directory('/datasets/miccai/images/data/train', target_size=(256, 256), batch_size=batchSize, class_mode=None, seed=seed, shuffle=False)
+mask_generator = mask_images.flow_from_directory('/datasets/miccai/labels/data/train', target_size=(256, 256), batch_size=batchSize, class_mode=None, seed=seed, shuffle=False)
+
+generator = (image_generator, mask_generator)
 net = Unet11()
 model = net.build_unet(tf.keras.layers.Input((256, 256, 3)))
 model.compile(loss='mean_absolute_error', optimizer=Adam(0.01), metrics=['accuracy'])
-datagen = data.image_generator()
 
-model.fit_generator(datagen, epochs=100, steps_per_epoch=data.data_len(), callbacks=callbacks_l)
+model.fit(image_generator, mask_generator, epochs=100, callbacks=callbacks_l)
 model.save_weights(save_path)
 
 
