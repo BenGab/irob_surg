@@ -8,12 +8,13 @@ from time import time
 from tensorflow.keras.callbacks import TensorBoard, EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 from tensorflow.keras.optimizers import Adam
 
-save_path = '/pretrined_models/UNET11_CAT_END_C1.h5'
+best_save_path='/pretrined_models/UNET11_CAT_END_C3_best.h5'
+save_path = '/pretrined_models/UNET11_CAT_END_C3.h5'
 callbacks_l = [
     TensorBoard('/boards/{}'.format(time())),
-    EarlyStopping(patience=10, verbose=1),
-    ReduceLROnPlateau(factor=0.1, patience=3, min_lr=0.000001, verbose=1),
-    ModelCheckpoint(save_path, verbose=1, save_best_only=True, save_weights_only=True)
+    EarlyStopping('loss', patience=10, verbose=1),
+    ReduceLROnPlateau('loss', factor=0.1, patience=3, min_lr=0.000001, verbose=1),
+    ModelCheckpoint(best_save_path, 'loss' ,verbose=1, save_best_only=True, save_weights_only=True)
 ]
 batchSize = 1
 data = MiccaiDataset(['/datasets/miccai_challenge_2018_release_1/seq_1',
@@ -39,11 +40,11 @@ set_session(sess)
 
 net = Unet11()
 model = net.build_unet(tf.keras.layers.Input((256, 256, 3)))
-model.compile(loss='categorical_crossentropy', optimizer=Adam(0.001), metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy', optimizer=Adam(0.01), metrics=['accuracy'])
 datagen = data.image_generator()
 
 
-model.fit_generator(datagen, epochs=36, steps_per_epoch=data.data_len(), callbacks=callbacks_l)
+model.fit_generator(datagen, epochs=100, steps_per_epoch=data.data_len(), callbacks=callbacks_l)
 model.save_weights(save_path)
 
 

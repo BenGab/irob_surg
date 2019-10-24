@@ -49,7 +49,7 @@ class MiccaiDataset:
                 image_src = cv2.resize(cv2.cvtColor(cv2.imread(image), cv2.COLOR_BGR2RGB), self.input_size)
                 label_src = cv2.resize(cv2.cvtColor(cv2.imread(mask), cv2.COLOR_BGR2RGB), self.input_size)
                 images.append(self.normalize_image(image_src))
-                labels.append(label_src.astype(np.float32))
+                labels.append(self.normalize_image(label_src))
             start+=self.batch_size
             end+=self.batch_size              
             yield np.array(images), np.array(labels)
