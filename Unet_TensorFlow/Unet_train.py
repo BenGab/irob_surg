@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 import tensorflow as tf
 from Dataset import  MiccaiDataset
-from Unet import Unet, Unet11
+from Unet import Unet, Unet11, Unet11_G
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.backend import set_session
 from time import time
 from tensorflow.keras.callbacks import TensorBoard, EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 from tensorflow.keras.optimizers import Adam
 
-best_save_path='/pretrined_models/UNET11_CAT_END_C3_best.h5'
-save_path = '/pretrined_models/UNET11_CAT_END_C3.h5'
+best_save_path='/pretrined_models/UNET11_G_BC_C1_best.h5'
+save_path = '/pretrined_models/UNET11_G_BC_C1.h5'
 callbacks_l = [
     TensorBoard('/boards/{}'.format(time())),
     EarlyStopping('loss', patience=10, verbose=1),
@@ -38,9 +38,9 @@ config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
 set_session(sess)
 
-net = Unet11()
-model = net.build_unet(tf.keras.layers.Input((256, 256, 3)))
-model.compile(loss='categorical_crossentropy', optimizer=Adam(0.01), metrics=['accuracy'])
+net = Unet11_G()
+model = net.build_unet(tf.keras.layers.Input((256, 256, 1)))
+model.compile(loss='binary_crossentropy', optimizer=Adam(0.1), metrics=['accuracy'])
 datagen = data.image_generator()
 
 

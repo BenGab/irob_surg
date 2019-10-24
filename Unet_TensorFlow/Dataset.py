@@ -28,8 +28,8 @@ class MiccaiDataset:
     
     def load_images(self):
         for src_path, label_path in self.paths:
-            image_src = cv2.resize(cv2.cvtColor(cv2.imread(src_path), cv2.COLOR_BGR2RGB), self.input_size)
-            label_src = cv2.resize(cv2.cvtColor(cv2.imread(label_path), cv2.COLOR_BGR2RGB), self.input_size)
+            image_src = cv2.resize(cv2.cvtColor(cv2.imread(src_path), cv2.COLOR_BGR2GRAY), self.input_size)
+            label_src = cv2.resize(cv2.cvtColor(cv2.imread(label_path), cv2.COLOR_BGR2GRAY), self.input_size).reshape(256, 256, 1)
             
             self.images.append(self.normalize_image(image_src))
             self.labels.append(self.normalize_image(label_src))
@@ -46,10 +46,10 @@ class MiccaiDataset:
             images, labels = [], []
             for i in range(start, end):
                 image, mask = self.paths[i]
-                image_src = cv2.resize(cv2.cvtColor(cv2.imread(image), cv2.COLOR_BGR2RGB), self.input_size)
-                label_src = cv2.resize(cv2.cvtColor(cv2.imread(mask), cv2.COLOR_BGR2RGB), self.input_size)
-                images.append(self.normalize_image(image_src))
-                labels.append(self.normalize_image(label_src))
+                image_src = cv2.resize(cv2.cvtColor(cv2.imread(image), cv2.COLOR_BGR2GRAY), self.input_size)
+                label_src = cv2.resize(cv2.cvtColor(cv2.imread(mask), cv2.COLOR_BGR2GRAY), self.input_size)
+                images.append(self.normalize_image(image_src).reshape(256, 256, 1))
+                labels.append(self.normalize_image(label_src).reshape(256, 256, 1))
             start+=self.batch_size
             end+=self.batch_size              
             yield np.array(images), np.array(labels)

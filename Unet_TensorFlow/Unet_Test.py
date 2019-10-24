@@ -7,7 +7,8 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.backend import set_session
 
 def load_image(path):
-    img=cv2.resize(cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2RGB), (256, 256))
+    img=cv2.resize(cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2GRAY), (256, 256))
+    print(np.amax(img))
     return np.array([(img.astype(np.float32) / 255)])
     
 config = tf.ConfigProto()
