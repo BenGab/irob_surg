@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import os
 import glob
+import shutil
     
 class MiccaiDataset:
     def __init__(self, rootDirs, pixelDiv, input_size, batch_size=1):
@@ -38,6 +39,20 @@ class MiccaiDataset:
 
     def data_len(self):
         return len(self.paths) / self.batch_size
+
+    def copy_images(self, folder_img, folder_labels):
+        for i, (image, mask) in enumerate(self.paths, start=0):
+            name = "000{}.png"
+            if i >= 10:
+                name="00{}.png"
+            if i >= 100:
+                name="0{}.png" 
+            if i >= 1000:
+                name="{}.png"
+            filename = name.format(i)
+            shutil.copy(image, '{}/{}'.format(folder_img, filename))
+            shutil.copy(mask, '{}/{}'.format(folder_labels, filename))
+
     
     def image_generator(self):
         while True:
