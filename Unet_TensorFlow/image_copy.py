@@ -1,19 +1,38 @@
-from Dataset import  MiccaiDataset
+import cv2
 
-data = MiccaiDataset(['/datasets/miccai_challenge_2018_release_1/seq_1',
-                       '/datasets/miccai_challenge_2018_release_1/seq_2',
-                       '/datasets/miccai_challenge_2018_release_1/seq_3',
-                       '/datasets/miccai_challenge_2018_release_1/seq_4',
-                       '/datasets/miccai_challenge_release_2/seq_5',
-                       '/datasets/miccai_challenge_release_2/seq_6',
-                       '/datasets/miccai_challenge_release_2/seq_7',
-                       '/datasets/miccai_challenge_release_3/seq_9',
-                       '/datasets/miccai_challenge_release_3/seq_10',
-                       '/datasets/miccai_challenge_release_3/seq_11',
-                       '/datasets/miccai_challenge_release_3/seq_12'
-                       '/datasets/miccai_challenge_release_4/seq_13', 
-                       '/datasets/miccai_challenge_release_4/seq_14',
-                       '/datasets/miccai_challenge_release_4/seq_15',
-                       '/datasets/miccai_challenge_release_4/seq_16'], 255, (256, 256))
+def make_frames(video, dest, index):
+        cap = cv2.VideoCapture(video)
+        count = 0
+    
+        while(True):
+            ret, frame = cap.read()
+            if not ret:
+                print('{} images created at iteration {}.'.format(count, index))
+                break
+            count += 1
+            (h, w) = frame.shape[:2]
+            center = (w / 2, h / 2)
+            M = cv2.getRotationMatrix2D(center, 20, 1.0)
+            name =  'frame_{}_{}'.format(index, count)
+            cv2.imwrite(dest.format(name), frame)
+            name =  'frame_{}f_{}'.format(index, count)
+            flip = cv2.flip(frame, 1)
+            cv2.imwrite(dest.format(name), flip)
+            name =  'frame_{}r_{}'.format(index, count)
+            rot = cv2.warpAffine(frame, M, (h, w))
+            cv2.imwrite(dest.format(name), rot)
+        cap.release()
+    
 
-data.copy_images('/datasets/miccai/images', '/datasets/miccai/labels')
+basedir = [('/home/bennyg/Development/datasets/miccai/videoframes/Segmentation_Robotic_Training/Training/Dataset2/Video.avi', '/home/bennyg/Development/datasets/miccai/videoframes/Segmentation_Robotic_Training/Training/Dataset2/Segmentation.avi'),
+           ('/home/bennyg/Development/datasets/miccai/videoframes/Segmentation_Robotic_Training/Training/Dataset3/Video.avi', '/home/bennyg/Development/datasets/miccai/videoframes/Segmentation_Robotic_Training/Training/Dataset3/Segmentation.avi'),
+           ('/home/bennyg/Development/datasets/miccai/videoframes/Segmentation_Robotic_Training/Training/Dataset4/Video.avi', '/home/bennyg/Development/datasets/miccai/videoframes/Segmentation_Robotic_Training/Training/Dataset3/Segmentation.avi')
+           ]
+
+destDir_img, destDir_mask = '/home/bennyg/Development/datasets/miccai/dataset/images/{}.jpg', '/home/bennyg/Development/datasets/miccai/dataset/masks/{}.jpg'
+
+for i, (image_vid_pth, mask_vid_pth) in enumerate(basedir):
+    print(mask_vid_pth)
+    make_frames(image_vid_pth, destDir_img, i)
+    make_frames(mask_vid_pth, destDir_mask, i)
+        
