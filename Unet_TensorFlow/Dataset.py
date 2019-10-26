@@ -24,8 +24,8 @@ class MiccaiDataset:
             im_label = labels_path + '/' + tail              
             if os.path.isfile(im_label):
                 self.paths.append((i, im_label))
-        self.val_paths = self.paths[3001::]
-        self.train_paths = self.paths[:3000]
+        self.val_paths = self.paths[2001::]
+        self.train_paths = self.paths[:2000]
         print(len(self.val_paths))
                     
                     

@@ -18,8 +18,9 @@ set_session(sess)
 net = Unet12()
 input_img = tf.keras.layers.Input((256, 256, 3), name='img')
 model = net.build_unet(input_img)
-model.load_weights('/pretrined_models/UNET12_BCE_G_C2.h5')
+model.load_weights('/pretrined_models/UNET12_BCE_G_C3.h5')
 
+#test data: /datasets/miccai/dataset/images/frame_2_994.jpg
 image = load_image('/datasets/miccai/dataset/images/frame_0_1.jpg')
 pred = model.predict(image)
 print(pred)
@@ -28,5 +29,5 @@ pred = pred * 255
 pred = pred.astype(np.int32).reshape(256,256)
 pred[pred < 0]=0
 pred[pred > 255]=255
-cv2.imwrite('/datasets/UNET12_BCE_G_C2.jpg', pred)
+cv2.imwrite('/datasets/UNET12_BCE_G_C3.jpg', pred)
 
