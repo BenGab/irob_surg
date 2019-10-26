@@ -178,3 +178,62 @@ class Unet11():
         (256, 256, 16)
         x = self.out_conv(u1)
         return tf.keras.models.Model([input_image], [x])
+
+class Unet12(Unet11):
+    def __init__(self, n_filters=16, dropout=0.5, batchNorm=True):
+        super(Unet12, self).__init__(n_filters, dropout, batchNorm)
+        
+    def build_unet(self, input_image):
+        c1 = self.conv2d_block(input_image, self.n_filters * 1, 'contraction_1', 3 ,batchNorm=self.batchnorm)
+        p1 = self.maxpool_1(c1)
+        p1 = self.dropout_1(p1)
+
+        #(128, 128, 16)
+        c2 = self.conv2d_block(p1, self.n_filters * 2, 'contraction_2', 3, self.batchnorm)
+        p2 = self.maxpool_2(c2)
+        p2 = self.dropout_2(p2)
+
+        # #(64, 64, 32)
+        c3 = self.conv2d_block(p2, self.n_filters * 4, 'contraction_3', 3, self.batchnorm)
+        p3 = self.maxpool_3(c3)
+        p3 = self.dropout_3(p3)
+
+        # (32, 32, 64)
+        c4 = self.conv2d_block(p3, self.n_filters *8, 'contraction_4', 3, self.batchnorm)
+        p4 = self.maxpool_4(c4)
+        p4 = self.dropout_4(p4)
+
+        # (16, 16, 128)
+        c5 = self.conv2d_block(p4, self.n_filters * 16, 'contraction_5', 3, self.batchnorm)
+
+        u4 = self.transpose2(c5)
+        u4 = self.dropout_6(u4)
+        u4 = self.concatenate_4([u4, c4])
+
+        u4 = self.conv2d_block(u4, self.n_filters * 8, 'extraction_2', 3, self.batchnorm)
+
+        u3 = self.transpose3(u4)
+        #(64, 64, 128)
+        u3 = self.concatenate_3([u3, c3])
+        #(64, 64, 192)
+        u3 = self.conv2d_block(u3, self.n_filters * 4, 'extraction_3', 3, self.batchnorm)
+
+        u2 = self.transpose4(u3)
+        u2 = self.dropout_6(u2)
+        #(128, 128, 64)
+        u2 = self.concatenate_4([u2, c2])
+
+        u2 = self.conv2d_block(u2, self.n_filters * 2, 'extraction_4', 3, self.batchnorm)
+
+        u1 = self.transpose5(u2)
+        u1 = self.dropout_7(u1)
+        (256, 256, 32)
+
+        u1 = self.concatenate_5([u1, c1])
+        (256, 256, 48)
+
+        u1 = self.conv2d_block(u1, self.n_filters * 1, 'extraction_5', 3, self.batchnorm)
+        (256, 256, 16)
+        x = self.out_conv(u1)  
+
+        return tf.keras.models.Model([input_image], [x])
