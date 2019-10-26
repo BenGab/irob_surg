@@ -86,7 +86,7 @@ class Unet11():
         self.transpose3 = tf.keras.layers.Conv2DTranspose(self.n_filters * 4, (3, 3), strides=(2, 2), padding='same', name='Transpose_3')
         self.transpose4 = tf.keras.layers.Conv2DTranspose(self.n_filters * 2, (3, 3), strides=(2, 2), padding='same', name='Transpose_4')
         self.transpose5 = tf.keras.layers.Conv2DTranspose(self.n_filters * 1, (3, 3), strides=(2, 2), padding='same', name='Transpose_5')
-        self.out_conv = tf.keras.layers.Conv2D(3, (1, 1), activation='softmax', name='out_conv')
+        self.out_conv = tf.keras.layers.Conv2D(3, (1, 1), activation='sigmoid', name='out_conv')
 
     def conv2d_block(self, input, n_filters, block_name, kernel_size=3, batchNorm=True):
         conv_block_1=tf.keras.layers.Conv2D(n_filters, (kernel_size, kernel_size), kernel_initializer='he_normal', padding='same', name='conv2_'+ block_name + '_1')
@@ -182,6 +182,7 @@ class Unet11():
 class Unet12(Unet11):
     def __init__(self, n_filters=16, dropout=0.5, batchNorm=True):
         super(Unet12, self).__init__(n_filters, dropout, batchNorm)
+        self.out_conv = tf.keras.layers.Conv2D(1, (1, 1), activation='sigmoid', name='out_conv')
         
     def build_unet(self, input_image):
         c1 = self.conv2d_block(input_image, self.n_filters * 1, 'contraction_1', 3 ,batchNorm=self.batchnorm)

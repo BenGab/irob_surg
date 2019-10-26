@@ -9,7 +9,8 @@ import random
 class MiccaiDataset:
     def __init__(self, rootDir, pixelDiv, input_size, batch_size=1):
         self.pixelDiv = pixelDiv
-        self.input_size = input_size 
+        self.h, self.w = input_size 
+        print((self.h, self.w))
         self.batch_size = batch_size
         self.paths = []
         self.images = []
@@ -23,8 +24,9 @@ class MiccaiDataset:
             im_label = labels_path + '/' + tail              
             if os.path.isfile(im_label):
                 self.paths.append((i, im_label))
-        self.val_paths = self.paths[0:115]
-        self.train_paths = self.paths[116::]
+        self.val_paths = self.paths[3001::]
+        self.train_paths = self.paths[:3000]
+        print(len(self.val_paths))
                     
                     
     def normalize_image(self, img):
@@ -32,8 +34,8 @@ class MiccaiDataset:
     
     def load_images(self):
         for src_path, label_path in self.paths:
-            image_src = cv2.resize(cv2.cvtColor(cv2.imread(src_path), cv2.COLOR_BGR2RGB), self.input_size)
-            label_src = cv2.resize(cv2.cvtColor(cv2.imread(label_path), cv2.COLOR_BGR2RGB), self.input_size)
+            image_src = cv2.resize(cv2.cvtColor(cv2.imread(src_path), cv2.COLOR_BGR2RGB), (self.h, self.w))
+            label_src = cv2.resize(cv2.cvtColor(cv2.imread(label_path), cv2.COLOR_BGR2RGB), (self.h, self.w))
             
             self.images.append(self.normalize_image(image_src))
             self.labels.append(self.normalize_image(label_src))
@@ -62,34 +64,17 @@ class MiccaiDataset:
     
     def image_train_generator(self):
         while True:
-            start=0
-            end=self.batch_size 
-            images, labels = [], []
-            path = self.train_paths
-            for i in range(start, end):
-                image, mask = path[i]
-                image_src = cv2.resize(cv2.cvtColor(cv2.imread(image), cv2.COLOR_BGR2RGB), self.input_size)
-                label_src = cv2.resize(cv2.cvtColor(cv2.imread(mask), cv2.COLOR_BGR2RGB), self.input_size)
-                images.append(self.normalize_image(image_src))
-                labels.append(self.normalize_image(label_src))
-            start+=self.batch_size
-            end+=self.batch_size              
-            yield np.array(images), np.array(labels)
+            for image, mask in self.train_paths:
+                image_src = cv2.resize(cv2.cvtColor(cv2.imread(image), cv2.COLOR_BGR2RGB), (self.h, self.w))
+                label_src = cv2.resize(cv2.cvtColor(cv2.imread(mask), cv2.COLOR_BGR2GRAY), (self.h, self.w))                 
+                yield np.array([self.normalize_image(image_src)]), np.array([self.normalize_image(label_src).reshape(self.h, self.w, 1)])
             
     def image_val_generator(self):
         while True:
-            start=0
-            end=self.batch_size 
-            images, labels = [], []
-            for i in range(start, end):
-                image, mask = self.val_paths[i]
-                image_src = cv2.resize(cv2.cvtColor(cv2.imread(image), cv2.COLOR_BGR2RGB), self.input_size)
-                label_src = cv2.resize(cv2.cvtColor(cv2.imread(mask), cv2.COLOR_BGR2RGB), self.input_size)
-                images.append(self.normalize_image(image_src))
-                labels.append(self.normalize_image(label_src))
-            start+=self.batch_size
-            end+=self.batch_size              
-            yield np.array(images), np.array(labels)
+            for image, mask in self.val_paths:
+                image_src = cv2.resize(cv2.cvtColor(cv2.imread(image), cv2.COLOR_BGR2RGB), (self.h, self.w))
+                label_src = cv2.resize(cv2.cvtColor(cv2.imread(mask), cv2.COLOR_BGR2GRAY), (self.h, self.w))            
+                yield np.array([self.normalize_image(image_src)]), np.array([self.normalize_image(label_src).reshape(self.h, self.w, 1)])
 
 
             
