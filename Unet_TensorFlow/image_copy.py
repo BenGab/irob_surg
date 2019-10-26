@@ -10,17 +10,8 @@ def make_frames(video, dest, index):
                 print('{} images created at iteration {}.'.format(count, index))
                 break
             count += 1
-            (h, w) = frame.shape[:2]
-            center = (w / 2, h / 2)
-            M = cv2.getRotationMatrix2D(center, 20, 1.0)
             name =  'frame_{}_{}'.format(index, count)
             cv2.imwrite(dest.format(name), frame)
-            name =  'frame_{}f_{}'.format(index, count)
-            flip = cv2.flip(frame, 1)
-            cv2.imwrite(dest.format(name), flip)
-            name =  'frame_{}r_{}'.format(index, count)
-            rot = cv2.warpAffine(frame, M, (h, w))
-            cv2.imwrite(dest.format(name), rot)
         cap.release()
     
 
@@ -32,7 +23,6 @@ basedir = [('/home/bennyg/Development/datasets/miccai/videoframes/Segmentation_R
 destDir_img, destDir_mask = '/home/bennyg/Development/datasets/miccai/dataset/images/{}.jpg', '/home/bennyg/Development/datasets/miccai/dataset/masks/{}.jpg'
 
 for i, (image_vid_pth, mask_vid_pth) in enumerate(basedir):
-    print(mask_vid_pth)
     make_frames(image_vid_pth, destDir_img, i)
     make_frames(mask_vid_pth, destDir_mask, i)
         
