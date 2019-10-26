@@ -10,8 +10,27 @@ def make_frames(video, dest, index):
                 print('{} images created at iteration {}.'.format(count, index))
                 break
             count += 1
+            (h, w) = frame.shape[:2]
+            center = (w / 2, h / 2)
+            M = cv2.getRotationMatrix2D(center, 5, 1.0)
             name =  'frame_{}_{}'.format(index, count)
             cv2.imwrite(dest.format(name), frame)
+            
+            name =  'frame_{}fv_{}'.format(index, count)
+            flip = cv2.flip(frame, 0)
+            cv2.imwrite(dest.format(name), flip)
+
+            name =  'frame_{}fvb_{}'.format(index, count)
+            flip = cv2.flip(frame, -1)
+            cv2.imwrite(dest.format(name), flip)
+
+            name =  'frame_{}fvh_{}'.format(index, count)
+            flip = cv2.flip(frame, 1)
+            cv2.imwrite(dest.format(name), flip)
+            
+            name =  'frame_{}r_{}'.format(index, count)
+            rot = cv2.warpAffine(frame, M, (h, w))
+            cv2.imwrite(dest.format(name), rot)
         cap.release()
     
 
