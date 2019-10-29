@@ -14,7 +14,7 @@ def mask_overlay(image, mask, color=(0, 255, 0)):
     return img
 
 def treshold_tool(blur):
-    return cv2.threshold(blur, 52, 87, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+    return cv2.threshold(blur, 52, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
     
 
 image_p = '/home/bennyg/Development/datasets/miccai/dataset/images/frame_0_1.jpg'
@@ -25,7 +25,9 @@ mask=cv2.cvtColor(cv2.imread(mask_p), cv2.COLOR_BGR2GRAY)
 
 #Gaussian blur for mask
 #treshold
-blur = cv2.GaussianBlur(mask,(5,5),0)
+pred_seq_mask = mask.copy()
+pred_seq_mask[pred_seq_mask >= 97] = 0
+blur = cv2.GaussianBlur(pred_seq_mask,(5,5),0)
 thresh = treshold_tool(blur)
 
 plt.imshow(thresh)
