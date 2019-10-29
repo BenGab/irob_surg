@@ -14,7 +14,7 @@ def mask_overlay(image, mask, color=(0, 255, 0)):
     return img
 
 def treshold_tool(blur):
-    return cv2.threshold(blur, 125, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+    return cv2.threshold(blur, 52, 87, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
     
 
 image_p = '/home/bennyg/Development/datasets/miccai/dataset/images/frame_0_1.jpg'

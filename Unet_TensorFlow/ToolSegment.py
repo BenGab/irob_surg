@@ -34,7 +34,7 @@ class TootlSegment():
         return img
 
     def treshold_tool(self, blur):
-        return cv2.threshold(blur, 125, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+        return cv2.threshold(blur, 52, 87, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
 
     def find_center(self, thresh):
         cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
